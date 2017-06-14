@@ -1,8 +1,46 @@
+
 <?php
-  
-    require 'conexion.php';
-    $sql = "select * from productos where Descripcion = ?";
-    $st = $pdo->prepare($sql);
-    $st->execute(array($_GET['Descripcion']));
-    $result = $st->fetchAll(PDO::FETCH_ASSOC); 
-    echo (json_encode($result,TRUE));
+
+//CORS PERMISOS todos los servidores pueden acceder a este documento * significa todos
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST,GET,OPTIONS");
+
+header("Content_Type:application/json");
+
+
+include_once('conexion.php');
+
+function lista($stock){
+
+global $enlace;
+
+$resultado = mysqli_query($enlace,"SELECT * FROM articulo where stock=$stock");
+
+while ($fila = mysqli_fetch_array($resultado)){
+	$todos[] = $fila;
+}
+
+return $todos;
+
+}
+
+
+if($_SERVER['REQUEST_METHOD'] === 'GET'){
+
+$resultado = lista( $_GET['stock'] );
+
+
+}else{
+	header('HTTP/1.1 405 Method Not Allowed');
+	exit;
+
+
+}
+
+
+echo json_encode($resultado);
+
+
+
+?>
